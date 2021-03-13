@@ -1,6 +1,5 @@
 package com.example.stories_libary
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -12,7 +11,8 @@ class StoriesView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), StoriesProgressView.StoriesListener {
+) : FrameLayout(context, attrs, defStyleAttr),
+    StoriesProgressView.StoriesListener, View.OnTouchListener {
     private var pressTime = 0L
     private var limit = 500L
     private var storiesProgressView: StoriesProgressView
@@ -35,13 +35,29 @@ class StoriesView @JvmOverloads constructor(
     private fun setMotionEvents() {
         with(reverseArea) {
             setOnClickListener { reverse() }
-            setOnTouchListener(onTouchListener)
+            setOnTouchListener(this@StoriesView)
         }
 
         with(skipArea) {
             setOnClickListener { skip() }
-            setOnTouchListener(onTouchListener)
+            setOnTouchListener(this@StoriesView)
         }
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                pressTime = System.currentTimeMillis()
+                storiesProgressView.pause()
+                return false
+            }
+            MotionEvent.ACTION_UP -> {
+                val now = System.currentTimeMillis()
+                storiesProgressView.resume()
+                return limit < now - pressTime
+            }
+        }
+        return false
     }
 
     private fun skip() {
@@ -52,24 +68,6 @@ class StoriesView @JvmOverloads constructor(
         if (position - 1 < 0) return
         listener?.loadView(--position)
         storiesProgressView.reverse()
-    }
-
-
-    @SuppressLint("ClickableViewAccessibility")
-    private val onTouchListener = OnTouchListener { v, event ->
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                pressTime = System.currentTimeMillis()
-                storiesProgressView.pause()
-                return@OnTouchListener false
-            }
-            MotionEvent.ACTION_UP -> {
-                val now = System.currentTimeMillis()
-                storiesProgressView.resume()
-                return@OnTouchListener limit < now - pressTime
-            }
-        }
-        false
     }
 
     override fun onStoriesStart() {
@@ -112,5 +110,4 @@ class StoriesView @JvmOverloads constructor(
         fun loadView(position: Int)
         fun onComplete()
     }
-
 }
