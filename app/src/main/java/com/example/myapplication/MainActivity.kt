@@ -9,11 +9,12 @@ import com.example.stories_libary.PausableProgressBar
 import com.example.stories_libary.StoriesProgressView
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    private lateinit var playBtn: Button
-    private lateinit var pauseBtn:Button
-    private lateinit var stopBtn:Button
-    private lateinit var resumeBtn:Button
-    private lateinit var exampleBtn:Button
+    private lateinit var playBtn : Button
+    private lateinit var pauseBtn : Button
+    private lateinit var stopBtn : Button
+    private lateinit var resumeBtn : Button
+    private lateinit var exampleBtn : Button
+    private lateinit var storiesView : StoriesProgressView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +33,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         stopBtn.setOnClickListener { pb.stopAnimation() }
         exampleBtn.setOnClickListener { startActivity(Intent(this, StoriesViewActivity::class.java)) }
 
-        val spv = findViewById<StoriesProgressView>(R.id.storiesProgressView)
+        storiesView = findViewById(R.id.storiesProgressView)
 
-        with(spv) {
+        with(storiesView) {
             setStoriesCount(5)
             setStoriesFrequency(50)
             startStories()
@@ -70,5 +71,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
+    override fun onDestroy() {
+        storiesView.onDestroy()
+        super.onDestroy()
+    }
 
+    override fun onPause() {
+        storiesView.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        storiesView.resume()
+    }
 }
