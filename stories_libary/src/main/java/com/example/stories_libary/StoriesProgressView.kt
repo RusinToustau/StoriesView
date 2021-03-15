@@ -18,10 +18,9 @@ class StoriesProgressView @JvmOverloads constructor(
 
     private var current = -1
     private var storiesListener: StoriesListener? = null
-    internal var isComplete: Boolean = false
+    private var isComplete: Boolean = false
 
     private var isSkipStart: Boolean = false
-    private var isReverseStart: Boolean = false
 
     init {
         orientation = HORIZONTAL
@@ -149,6 +148,15 @@ class StoriesProgressView @JvmOverloads constructor(
 
     fun startStories() {
         storiesListener?.onStoriesStart()
-        progressBars.getOrNull(0)?.startAnimation()
+        current = 0
+        progressBars.getOrNull(current)?.startAnimation()
+    }
+
+    fun onDestroy() {
+        this.storiesListener = null
+        for (progressBar in progressBars) {
+            progressBar.stopAnimation()
+            progressBar.cleanCallback()
+        }
     }
 }

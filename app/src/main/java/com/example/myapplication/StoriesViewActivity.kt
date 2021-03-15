@@ -32,7 +32,7 @@ class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {
         }
     }
 
-    override fun loadView(position: Int) {
+    override fun onPositionChanged(position: Int) {
         resourcesList.getOrNull(position)?.let {
             mImageView.setImageDrawable(getDrawable(it))
         }
@@ -42,4 +42,18 @@ class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {
         onBackPressed()
     }
 
+    override fun onDestroy() {
+        storiesView.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        storiesView.onPause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        storiesView.onResume()
+    }
 }

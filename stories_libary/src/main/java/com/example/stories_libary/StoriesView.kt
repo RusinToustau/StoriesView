@@ -66,17 +66,17 @@ class StoriesView @JvmOverloads constructor(
 
     private fun reverse() {
         if (position - 1 < 0) return
-        listener?.loadView(--position)
+        listener?.onPositionChanged(--position)
         storiesProgressView.reverse()
     }
 
     override fun onStoriesStart() {
-        listener?.loadView(position)
+        listener?.onPositionChanged(position)
     }
 
     override fun onNext() {
         if (position + 1 < max)
-            listener?.loadView(++position)
+            listener?.onPositionChanged(++position)
     }
 
     override fun onComplete() {
@@ -107,7 +107,19 @@ class StoriesView @JvmOverloads constructor(
     }
 
     interface Listener {
-        fun loadView(position: Int)
+        fun onPositionChanged(position: Int)
         fun onComplete()
+    }
+
+    fun onDestroy() {
+        storiesProgressView.onDestroy()
+    }
+
+    fun onPause() {
+        storiesProgressView.pause()
+    }
+
+    fun onResume() {
+        storiesProgressView.resume()
     }
 }
