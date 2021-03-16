@@ -6,9 +6,9 @@ import android.view.View
 import android.widget.LinearLayout
 
 class StoriesProgressView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val progressBarLayoutParam = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
@@ -16,11 +16,8 @@ class StoriesProgressView @JvmOverloads constructor(
     private val progressBars = ArrayList<PausableProgressBar>()
     private var storiesCount : Int = -1
 
-    private var current = -1
+    private var current = 0
     private var storiesListener: StoriesListener? = null
-    private var isComplete: Boolean = false
-
-    private var isSkipStart: Boolean = false
 
     init {
         orientation = HORIZONTAL
@@ -89,15 +86,12 @@ class StoriesProgressView @JvmOverloads constructor(
     }
 
     private fun next() {
-        val next = current + 1
-        if (next <= progressBars.size - 1) {
+        if (current + 1 < progressBars.size) {
             storiesListener?.onNext()
-            progressBars[next].startAnimation()
+            progressBars[++current].startAnimation()
         } else {
-            isComplete = true
             storiesListener?.onComplete()
         }
-        isSkipStart = false
     }
 
     fun setStoriesListener(storiesListener: StoriesListener) {
@@ -106,7 +100,7 @@ class StoriesProgressView @JvmOverloads constructor(
 
     private fun previous() {
         if (current - 1 < 0) return
-        progressBars[--current].stopAnimation()
+        progressBars[current--].stopAnimation()
         progressBars[current].startAnimation()
     }
 
@@ -136,27 +130,24 @@ class StoriesProgressView @JvmOverloads constructor(
     /**
      * Set stories count and each story duration
      *
-     * @param frequency milliseconds between add one percent on progress bar
+     * @param duration milliseconds
      */
-    fun setStoriesFrequency(frequency: Int) {
+    fun setStoriesDuration(duration: Int) {
         bindViews()
         for (i in progressBars.indices) {
-            progressBars[i].setVelocity(frequency)
-            progressBars[i].setCallback(callback(i))
+            progressBars[i].setProgressBarDuration(duration.toLong())
+            progressBars[i].callback = callback(i)
         }
     }
 
     fun startStories() {
         storiesListener?.onStoriesStart()
-        current = 0
         progressBars.getOrNull(current)?.startAnimation()
     }
 
-    fun onDestroy() {
-        this.storiesListener = null
-        for (progressBar in progressBars) {
-            progressBar.stopAnimation()
-            progressBar.cleanCallback()
+    fun destroy() {
+        for (p in progressBars) {
+            p.stopAnimation()
         }
     }
 }
