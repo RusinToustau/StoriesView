@@ -28,7 +28,7 @@ class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {
         storiesView = findViewById(R.id.myStoriesView)
         with(storiesView) {
             setListener(this@StoriesViewActivity)
-            startAnimationWithSize(listSize = resourcesList.size, frequencyRange = 50)
+            startAnimationWithSize(listSize = resourcesList.size, duration = 5000)
         }
     }
 
@@ -43,17 +43,17 @@ class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {
     }
 
     override fun onDestroy() {
-        storiesView.onDestroy()
+        storiesView.destroy()
         super.onDestroy()
     }
 
     override fun onPause() {
-        storiesView.onPause()
+        storiesView.pause()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        storiesView.onResume()
+        storiesView.resume()
     }
 }

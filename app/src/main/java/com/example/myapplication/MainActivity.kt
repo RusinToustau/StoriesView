@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         storiesView = findViewById(R.id.storiesProgressView)
 
         with(storiesView) {
-            setStoriesCount(5)
-            setStoriesFrequency(50)
+            setStoriesCount(storiesCount = 5)
+            setStoriesDuration(duration = 5000)
             startStories()
             setStoriesListener(storiesListener)
         }
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     override fun onDestroy() {
-        storiesView.onDestroy()
+        storiesView.destroy()
         super.onDestroy()
     }
 
