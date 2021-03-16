@@ -1,27 +1,27 @@
 package com.example.stories_libary
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.Context
-import android.os.Handler
 import android.util.AttributeSet
+import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 
 class PausableProgressBar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr), Animator.AnimatorListener {
 
-    private var callback: Callback? = null
-    private var mVelocity: Long = 50
     private var mProgressBar: ProgressBar
-    private var mPaused = false
-    private var progressState = 0
+    private lateinit var animator: ObjectAnimator
+    var animationDuration: Long = 5000
+    var callback: Callback? = null
 
     init {
-        inflate(context, R.layout.pausable_pregress_bar, this)
+        inflate(context, R.layout.pausable_progress_bar, this)
         with(context.obtainStyledAttributes(attrs, R.styleable.PausableProgressBar)) {
-            setVelocity(getInteger(R.styleable.PausableProgressBar_velocity, 50))
             recycle()
         }
         mProgressBar = findViewById(R.id.storyProgressBar)
@@ -33,58 +33,57 @@ class PausableProgressBar @JvmOverloads constructor(
      * @param frequency milli
      */
 
-    fun setVelocity(frequency: Int) {
-        this.mVelocity = frequency.toLong()
+    fun setProgressBarDuration(animationDuration: Long) {
+        this.animationDuration = animationDuration
+        animator = ObjectAnimator.ofInt(mProgressBar, "progress", 0, 100)
+        with(animator) {
+            duration = animationDuration
+            interpolator = DecelerateInterpolator()
+            addListener(this@PausableProgressBar)
+        }
     }
 
-    fun setCallback(callback: Callback) {
-        this.callback = callback
+    override fun onAnimationStart(p0: Animator?) {
+        callback?.onStartProgress()
+    }
+
+    override fun onAnimationEnd(p0: Animator?) {
+        callback?.onFinishProgress()
+    }
+
+    override fun onAnimationCancel(p0: Animator?) {
+        // Not implemented //
+    }
+
+    override fun onAnimationRepeat(p0: Animator?) {
+        // Not implemented //
     }
 
     fun startAnimation() {
-        mPaused = false
-        callback?.onStartProgress()
-        runProgressBar()
+        mProgressBar.progress = 0
+        animator.start()
     }
 
     fun stopAnimation() {
-        mPaused = true
-        progressState = 0
+        animator.pause()
         mProgressBar.progress = 0
     }
 
     fun markAsComplete() {
-        mPaused = true
-        progressState = 100
+        animator.pause()
         mProgressBar.progress = 100
     }
 
     fun pauseAnimation() {
-        mPaused = true
+        animator.pause()
     }
 
     fun resumeAnimation() {
-        mPaused = false
-        runProgressBar()
+        animator.resume()
     }
 
     fun cleanCallback() {
         callback = null
-    }
-
-    private fun runProgressBar() {
-        if ( progressState <  100 && !mPaused ) {
-            addProgress()
-        } else if (progressState == 100) {
-            callback?.onFinishProgress()
-        }
-    }
-
-    private fun addProgress() {
-        Handler().postDelayed({
-            mProgressBar.progress = progressState++
-            runProgressBar()
-        }, mVelocity)
     }
 
     interface Callback {

@@ -12,7 +12,7 @@ class StoriesView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr),
-    StoriesProgressView.StoriesListener, View.OnTouchListener {
+        StoriesProgressView.StoriesListener, View.OnTouchListener {
     private var pressTime = 0L
     private var limit = 500L
     private var storiesProgressView: StoriesProgressView
@@ -21,7 +21,7 @@ class StoriesView @JvmOverloads constructor(
     private var position = 0
     private var max = 0
     private var listener: Listener? = null
-    
+
     init {
         inflate(context, R.layout.stories_view, this)
         layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -87,13 +87,13 @@ class StoriesView @JvmOverloads constructor(
      * Required
      * Loaded views counts
      * @param listSize: Int -> number exactly of view shown
-     * @param frequencyRange: Int -> milliseconds between start and finish a PausableProgressBar()
+     * @param duration: Int -> milliseconds between start and finish a PausableProgressBar()
      **/
-    fun startAnimationWithSize(listSize: Int, frequencyRange: Int?) {
+    fun startAnimationWithSize(listSize: Int, duration: Int?) {
         this.max = listSize
         with(storiesProgressView) {
             setStoriesCount(listSize)
-            frequencyRange?.let { setStoriesFrequency(it) }?.run { setStoriesFrequency(50) }
+            duration?.let { setStoriesDuration(it) }
             startStories()
         }
     }
@@ -111,15 +111,16 @@ class StoriesView @JvmOverloads constructor(
         fun onComplete()
     }
 
-    fun onDestroy() {
-        storiesProgressView.onDestroy()
+    fun destroy() {
+        storiesProgressView.destroy()
+        this.listener = null
     }
 
-    fun onPause() {
+    fun pause() {
         storiesProgressView.pause()
     }
 
-    fun onResume() {
+    fun resume() {
         storiesProgressView.resume()
     }
 }
