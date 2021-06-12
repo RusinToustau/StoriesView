@@ -1,37 +1,30 @@
 # StoriesView - Compoenente de Vista 
 
+La idea es mostrar un walkthrough con el formato de stories de Instagram. 
+Este primer mr contiene los tres componentes para lograr la animación y los eventos de skip, reverse y pause que tienen las stories. 
+
+
 ![example2](https://user-images.githubusercontent.com/28780954/111054899-0bc9f600-844f-11eb-8ada-7c1f21772622.gif)
 
-## Descripción
+| Componente | Responsabilidad |
+| ------ | ------ |
+| `PausableProgressBar` | Un progressbar custom que permite ser pausado al que se le puede setear la duración(en milisegundos)  |
+| `StoriesProgressView` | Es un Linear layout con un conjunto de `PausableProgressBar` separadas por un espacio. Permite frenar el proceso en cualquier instancia | 
+| `StoriesView` | Es una vista contenedora, que tiene en conjunto el StoriesProgressView (con N `PausableProgressBar`) y dos `View` areas que tienen asignadas listeners motion event para pausar, avanzar o retroceder  |
 
-Se trata de una test app y un módulo contenedor con tres componentes de vistas: `PausableProgressBar`, `StoriesProgressView`y `StoriesView`.
+| **Distribución de la vista** |
+| ------ |
+| <img width="694" alt="Captura_de_Pantalla_2021-05-12_a_la_s__16 18 52" src="https://user-images.githubusercontent.com/28780954/121787831-df815b00-cb9e-11eb-8332-3f43f8d17401.png"> |
 
 ## Implementación 
 
-### Layout
 
-```
-    <com.example.stories_libary.StoriesView
-        android:id="@+id/myStoriesView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+````
+class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {
+    private lateinit var storiesView: StoriesView
 
-```
-
-
-### Activity contenedora
-
-Se requiere la implementacion de los metodos `override fun loadView(position: Int)` y  `override fun onComplete()` de `StoriesView.Listener` y setearlo a `StoriesView`.
-
-```
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_stories_view)
-        mImageView = findViewById(R.id.imageView)
+    ....
         setStoriesView()
     }
 
@@ -39,11 +32,46 @@ Se requiere la implementacion de los metodos `override fun loadView(position: In
         storiesView = findViewById(R.id.myStoriesView)
         with(storiesView) {
             setListener(this@StoriesViewActivity)
-            startAnimationWithSize(listSize = resourcesList.size, frequencyRange = 50)
+            startAnimationWithSize(listSize = resourcesList.size, duration = 5000)
         }
     }
 
-    override fun loadView(position: Int) {
+
+   // Sobrescribir  onDestroy(), onPause(), onResume()
+
+    override fun onDestroy() {
+        storiesView.destroy()
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        storiesView.onPause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        storiesView.onResume()
+    }
+}
+
+```` 
+
+La implementación de StoriesView.Listener será a travez de `onPositionChanged(position: Int)` y `override fun onComplete()`. 
+
+**onPositionChanged**
+
+Se disparará cada vez que haya un cambio de posición, ya sea por finalización del tiempo de duración o por un evento de onClick u onTouch (cuando el usuario avanza, retrocede), indicando el index correspondiente a la animación que este reproduciéndose. 
+
+**onComplete**
+
+Se disparará cuando finalice de reproducirse la última animación.
+
+* en estos caso llamamos animación al componente `PausableProgressBar
+
+````
+
+    override fun onPositionChanged(position: Int) {
         resourcesList.getOrNull(position)?.let {
             mImageView.setImageDrawable(getDrawable(it))
         }
@@ -52,4 +80,5 @@ Se requiere la implementacion de los metodos `override fun loadView(position: In
     override fun onComplete() {
         onBackPressed()
     }
-```
+
+````
