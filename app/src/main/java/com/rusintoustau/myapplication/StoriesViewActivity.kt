@@ -1,11 +1,11 @@
-package com.example.myapplication
+package com.rusintoustau.myapplication
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import com.example.stories_libary.StoriesView
+import com.rusintoustau.stories_libary.StoriesView
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class StoriesViewActivity : AppCompatActivity(), StoriesView.Listener {

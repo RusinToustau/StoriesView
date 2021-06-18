@@ -1,4 +1,4 @@
-package com.example.stories_libary
+package com.rusintoustau.stories_libary
 
 import android.content.Context
 import android.util.AttributeSet

@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.example.stories_libary.StoriesView
+    <com.rusintoustau.stories_libary.StoriesView
         android:id="@+id/myStoriesView"
         android:layout_width="0dp"
         android:layout_height="0dp"

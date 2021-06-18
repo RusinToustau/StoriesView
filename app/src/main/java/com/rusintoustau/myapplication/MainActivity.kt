@@ -1,12 +1,12 @@
-package com.example.myapplication
+package com.rusintoustau.myapplication
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import com.example.stories_libary.PausableProgressBar
-import com.example.stories_libary.StoriesProgressView
+import com.rusintoustau.stories_libary.PausableProgressBar
+import com.rusintoustau.stories_libary.StoriesProgressView
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private lateinit var playBtn : Button
@@ -15,11 +15,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private lateinit var resumeBtn : Button
     private lateinit var exampleBtn : Button
     private lateinit var storiesView : StoriesProgressView
+    private lateinit var pausableProgressBar: PausableProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val pb = findViewById<PausableProgressBar>(R.id.pausableProgressBar)
 
         playBtn = findViewById(R.id.playButton)
         pauseBtn = findViewById(R.id.pauseButton)
@@ -27,20 +26,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         resumeBtn = findViewById(R.id.resumeButton)
         exampleBtn = findViewById(R.id.showStoriesExample)
 
-        playBtn.setOnClickListener { pb.startAnimation() }
-        pauseBtn.setOnClickListener { pb.pauseAnimation() }
-        resumeBtn.setOnClickListener { pb.resumeAnimation() }
-        stopBtn.setOnClickListener { pb.stopAnimation() }
+        playBtn.setOnClickListener { pausableProgressBar.startAnimation() }
+        pauseBtn.setOnClickListener { pausableProgressBar.pauseAnimation() }
+        resumeBtn.setOnClickListener { pausableProgressBar.resumeAnimation() }
+        stopBtn.setOnClickListener { pausableProgressBar.stopAnimation() }
         exampleBtn.setOnClickListener { startActivity(Intent(this, StoriesViewActivity::class.java)) }
 
-        storiesView = findViewById(R.id.storiesProgressView)
+        storiesView = findViewById<StoriesProgressView>(R.id.storiesProgressView)
+            .apply {
+                setStoriesCount(storiesCount = 5)
+                setStoriesDuration(duration = 5000)
+                startStories()
+                setStoriesListener(storiesListener)
+            }
 
-        with(storiesView) {
-            setStoriesCount(storiesCount = 5)
-            setStoriesDuration(duration = 5000)
-            startStories()
-            setStoriesListener(storiesListener)
-        }
+        pausableProgressBar = findViewById<PausableProgressBar>(R.id.pausableProgressBar)
+            .apply { setProgressBarDuration(5000) }
     }
 
     val pausableCallback = object : PausableProgressBar.Callback {

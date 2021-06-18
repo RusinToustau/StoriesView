@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.rusintoustau.myapplication
 
 import org.junit.Test
 
