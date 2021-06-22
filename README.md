@@ -1,7 +1,7 @@
 # StoriesView - Compoenente de Vista 
 
 La idea es mostrar un walkthrough con el formato de stories de Instagram. 
-Este primer mr contiene los tres componentes para lograr la animación y los eventos de skip, reverse y pause que tienen las stories. 
+Este primer proyecto contiene tres componentes para lograr tanto la animación como los eventos de skip, reverse y pause que tienen las stories. 
 
 
 ![example2](https://user-images.githubusercontent.com/28780954/111054899-0bc9f600-844f-11eb-8ada-7c1f21772622.gif)
